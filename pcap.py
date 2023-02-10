@@ -13,30 +13,6 @@ message =  ('73 01 00 08'   #Foo Base Header
             '01 02 00 00'   #Foo Message (31 Bytes)
             '00 00 12 30'   
             '00 00 12 31'
-                        '00 00 12 31'
-            '00 00 12 32' 
-            '00 00 12 33' 
-            '00 00 12 34' 
-                        '00 00 12 31'
-            '00 00 12 32' 
-            '00 00 12 33' 
-            '00 00 12 34' 
-                        '00 00 12 31'
-            '00 00 12 32' 
-            '00 00 12 33' 
-            '00 00 12 34' 
-                        '00 00 12 31'
-            '00 00 12 32' 
-            '00 00 12 33' 
-            '00 00 12 34' 
-                        '00 00 12 31'
-            '00 00 12 32' 
-            '00 00 12 33' 
-            '00 00 12 34' 
-            '00 00 12 32' 
-            '00 00 12 33' 
-            '00 00 12 34' 
-            'D7 CD EF'      #Foo flags
             '00 00 12 35')     
 
 
@@ -53,18 +29,14 @@ import socket
 with open('config.json') as json_file:
     data = json.load(json_file)
 
-print(data['config']['ip']['port'])
-print(data['config']['ip']['source'])
-print(data['config']['ip']['destination'])
+if data['packet']['config']['ip']['port'] :
+    port = data['packet']['config']['ip']['port']
 
-if data['config']['ip']['port'] :
-    port = data['config']['ip']['port']
+if data['packet']['config']['ip']['source'] :
+    source = data['packet']['config']['ip']['source']
 
-if data['config']['ip']['source'] :
-    source = data['config']['ip']['source']
-
-if data['config']['ip']['destination'] :
-    destination = data['config']['ip']['destination']
+if data['packet']['config']['ip']['destination'] :
+    destination = data['packet']['config']['ip']['destination']
 
 #Global header for pcap 2.4
 pcap_global_header =   ('D4 C3 B2 A1'   
@@ -101,7 +73,7 @@ udp_header =   ('80 01'
                 '00 00')
                 
 def getByteLength(str1):
-    return len(''.join(str1.split())) / 2
+    return int(len(''.join(str1.split())) / 2 )
 
 def writeByteStringToFile(bytestring, filename):
     bytelist = bytestring.split()  
@@ -109,7 +81,7 @@ def writeByteStringToFile(bytestring, filename):
     bitout = open(filename, 'wb')
     bitout.write(bytes)
 
-def generatePCAP(message,port,pcapfile): 
+def generatePCAP(pcapfile): 
 
     global ip_header
 
@@ -118,21 +90,21 @@ def generatePCAP(message,port,pcapfile):
     udp = udp.replace('YY YY',"%04x"%udp_len)
 
     source_hex = str(binascii.hexlify(socket.inet_aton(str(source))))
-  
-    ip_header = ip_header.replace('S1', str(source_hex[0:2] ))
-    ip_header = ip_header.replace('S2', str(source_hex[2:4] ))
-    ip_header = ip_header.replace('S3', str(source_hex[4:6] ))
-    ip_header = ip_header.replace('S4', str(source_hex[6:8]))
+    ip_header = ip_header.replace('S1', str(source_hex[2:4] ))
+    ip_header = ip_header.replace('S2', str(source_hex[4:6] ))
+    ip_header = ip_header.replace('S3', str(source_hex[6:8] ))
+    ip_header = ip_header.replace('S4', str(source_hex[8:10]))
   
     destination_hex = str(binascii.hexlify(socket.inet_aton(str(destination))))
   
-    ip_header = ip_header.replace('D1', str(destination_hex[0:2] ))
-    ip_header = ip_header.replace('D2', str(destination_hex[2:4] ))
-    ip_header = ip_header.replace('D3', str(destination_hex[4:6] ))
-    ip_header = ip_header.replace('D4', str(destination_hex[6:8]))
+    ip_header = ip_header.replace('D1', str(destination_hex[2:4] ))
+    ip_header = ip_header.replace('D2', str(destination_hex[4:6] ))
+    ip_header = ip_header.replace('D3', str(destination_hex[6:8] ))
+    ip_header = ip_header.replace('D4', str(destination_hex[8:10]))
 
     ip_len = udp_len + getByteLength(ip_header)
     ip = ip_header.replace('XX XX',"%04x"%ip_len)
+
     checksum = ip_checksum(ip.replace('YY YY','00 00'))
     ip = ip.replace('YY YY',"%04x"%checksum)
 
@@ -157,6 +129,7 @@ def ip_checksum(iph):
 
     csum = 0;
     for word in words:
+        print(word)
         csum += int(word, base=16)
 
     csum += (csum >> 16)
@@ -173,4 +146,4 @@ if len(sys.argv) < 2:
         print ('usage: pcapgen.py output_file')
         exit(0)
 
-generatePCAP(message,port,sys.argv[1])
+generatePCAP(sys.argv[1])
