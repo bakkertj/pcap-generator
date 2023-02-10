@@ -129,7 +129,6 @@ def ip_checksum(iph):
 
     csum = 0;
     for word in words:
-        print(word)
         csum += int(word, base=16)
 
     csum += (csum >> 16)
