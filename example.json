@@ -1,0 +1,93 @@
+{
+    "message": {
+      "id": 2430,
+      "name": "IP Address Data - Request",
+      "description": "Command to request an Ethernet IP address.",
+      "data_element": [
+        {
+          "name": "SUB Source",
+          "description": "Sending SUB Number",
+          "start_bit": 0,
+          "length": 16,
+          "units": "N/A",
+          "endianness": "Big",
+          "type": {
+            "start_range": 0,
+            "end_range": 65535,
+            "scale_factor": 1,
+            "format": "Hex"
+          },
+          "representation": "Unsigned Integer"
+        },
+        {
+          "name": "ICD Number",
+          "description": "Message Number",
+          "start_bit": 16,
+          "length": 16,
+          "units": "N/ A",
+          "endianness": "Big",
+          "type": {
+            "start_range": 0,
+            "end_range": 65535,
+            "scale_factor": 1,
+            "format": "Hex",
+            "representation": "Unsigned Integer"
+          }
+        },
+        {
+          "name": "Data Length",
+          "description": "EXAMPLE Message Data Length",
+          "start_bit": 32,
+          "length": 16,
+          "units": "bytes",
+          "endianness": "Big",
+          "type": {
+            "start_range": "@",
+            "end_range": 65535,
+            "scale_factor": 1,
+            "format": "Integer",
+            "representation": "Unsigned Integer"
+          }
+        },
+        {
+          "name": "Transaction ID",
+          "description": "Message transaction sequence number",
+          "start_bit": 48,
+          "length": 16,
+          "units": "N/A",
+          "endianness": "Big",
+          "type": {
+            "start_range": 0,
+            "end_range": 65535,
+            "scale_factor": 1,
+            "format": "Integer"
+          },
+          "representation": "Unsigned Integer"
+        },
+        {
+          "name": "Identification",
+          "description": "ID Code",
+          "start_bit": 64,
+          "length": 32,
+          "units": "N/A",
+          "endianness": "Big",
+          "type": ""
+        },
+        {
+          "name": "MAC Address",
+          "description": "MAC Address",
+          "start_bit": 96,
+          "length": 64,
+          "units": "N/A",
+          "endianness": "Big",
+          "type": {
+            "start_range": 0,
+            "end_range": 281474976710655,
+            "scale_factor": 1,
+            "format": "Hex",
+            "representation": "Unsigned Integer"
+          }
+        }
+      ]
+    }
+  }
