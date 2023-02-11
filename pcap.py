@@ -38,6 +38,12 @@ if data['packet']['config']['ip']['source'] :
 if data['packet']['config']['ip']['destination'] :
     destination = data['packet']['config']['ip']['destination']
 
+if data['packet']['id'] :
+    id = data['packet']['id']
+
+with open('example.json') as dictionary_json_file:
+    packet_dictionary = json.load(dictionary_json_file)
+
 #Global header for pcap 2.4
 pcap_global_header =   ('D4 C3 B2 A1'   
                         '02 00'         #File format major revision (i.e. pcap <2>.4)  
@@ -81,7 +87,12 @@ def writeByteStringToFile(bytestring, filename):
     bitout = open(filename, 'wb')
     bitout.write(bytes)
 
-def generatePCAP(pcapfile): 
+def generatePCAPFileHeader(pcapfile): 
+
+    bytestring = pcap_global_header 
+    writeByteStringToFile(bytestring, pcapfile)
+
+def generateExamplePacket( id, pcapfile ):
 
     global ip_header
 
@@ -114,6 +125,11 @@ def generatePCAP(pcapfile):
     pcaph = pcap_packet_header.replace('XX XX XX XX',reverse_hex_str)
     pcaph = pcaph.replace('YY YY YY YY',reverse_hex_str)
 
+    for v in packet_dictionary['messages']:
+        if id == v['id']:
+            for k in v['data_element']:
+                print( k['name'])
+
     bytestring = pcap_global_header + pcaph + eth_header + ip + udp + message
     writeByteStringToFile(bytestring, pcapfile)
 
@@ -145,4 +161,5 @@ if len(sys.argv) < 2:
         print ('usage: pcapgen.py output_file')
         exit(0)
 
-generatePCAP(sys.argv[1])
+generatePCAPFileHeader( sys.argv[1] )
+generateExamplePacket( 2430, sys.argv[1])
