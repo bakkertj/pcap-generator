@@ -72,7 +72,9 @@
           "length": 32,
           "units": "N/A",
           "endianness": "Big",
-          "type": ""
+          "type": {
+            "format": "String"
+          } 
         },
         {
           "name": "MAC Address",
@@ -163,7 +165,9 @@
           "length": 32,
           "units": "N/A",
           "endianness": "Big",
-          "type": ""
+          "type": {
+            "format": "String"
+          }
         },
         {
           "name": "MAC Address",

@@ -9,11 +9,7 @@ destination = 0xc0a80102
 port = 1973
 
 #Custom Foo Protocol Packet
-message =  ('73 01 00 08'   #Foo Base Header
-            '01 02 00 00'   #Foo Message (31 Bytes)
-            '00 00 12 30'   
-            '00 00 12 31'
-            '00 00 12 35')     
+message =  ('')   
 
 
 """----------------------------------------------------------------"""
@@ -87,6 +83,21 @@ def writeByteStringToFile(bytestring, filename):
     bitout = open(filename, 'wb')
     bitout.write(bytes)
 
+def packHex( element ):
+    return 'DEAD'
+
+def packInteger( element ):
+    return 'DEAD'
+    
+def packString( element ):
+    return 'DEAD'
+    
+functions = {
+    'Integer': packInteger,
+    'String':  packString,
+    'Hex':     packHex
+}
+
 def generatePCAPFileHeader(pcapfile): 
 
     bytestring = pcap_global_header 
@@ -95,10 +106,8 @@ def generatePCAPFileHeader(pcapfile):
 def generateExamplePacket( id, pcapfile ):
 
     global ip_header
+    global message
 
-    udp = udp_header.replace('XX XX',"%04x"%port)
-    udp_len = getByteLength(message) + getByteLength(udp_header)
-    udp = udp.replace('YY YY',"%04x"%udp_len)
 
     source_hex = str(binascii.hexlify(socket.inet_aton(str(source))))
     ip_header = ip_header.replace('S1', str(source_hex[2:4] ))
@@ -113,6 +122,24 @@ def generateExamplePacket( id, pcapfile ):
     ip_header = ip_header.replace('D3', str(destination_hex[6:8] ))
     ip_header = ip_header.replace('D4', str(destination_hex[8:10]))
 
+
+
+
+    for v in packet_dictionary['messages']:
+        if id == v['id']:
+            for k in v['data_element']:
+                print(k['length'])
+                print(k['name'])
+                print(k['type']['format'])
+                # determine if type is int and call appropriate data type
+                func = functions[k['type']['format']]
+                message += func(k)
+    print(message)
+
+    udp = udp_header.replace('XX XX',"%04x"%port)
+    udp_len = getByteLength(message) + getByteLength(udp_header)
+    udp = udp.replace('YY YY',"%04x"%udp_len)
+
     ip_len = udp_len + getByteLength(ip_header)
     ip = ip_header.replace('XX XX',"%04x"%ip_len)
 
@@ -124,11 +151,6 @@ def generateExamplePacket( id, pcapfile ):
     reverse_hex_str = hex_str[6:] + hex_str[4:6] + hex_str[2:4] + hex_str[:2]
     pcaph = pcap_packet_header.replace('XX XX XX XX',reverse_hex_str)
     pcaph = pcaph.replace('YY YY YY YY',reverse_hex_str)
-
-    for v in packet_dictionary['messages']:
-        if id == v['id']:
-            for k in v['data_element']:
-                print( k['name'])
 
     bytestring = pcap_global_header + pcaph + eth_header + ip + udp + message
     writeByteStringToFile(bytestring, pcapfile)
