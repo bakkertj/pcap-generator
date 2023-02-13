@@ -87,7 +87,6 @@ def writeByteStringToFile(bytestring, filename):
 
 def packHex( element ):
     value = random.randrange(element['type']['start_range'], element['type']['end_range'])
-    print("{0:0{1}X}".format(value,int(element['length']/8)))
     return "{0:0{1}X}".format(value,int(element['length']/8)), int(element['length']/8)
 
 def packInteger( element ):
@@ -96,7 +95,6 @@ def packInteger( element ):
     
 def packString( element ):
     value = random.randrange(65, 90)
-    print("Random String {0:0{1}X}".format(value,int(element['length']/8)))
     return "{0:0{1}X}".format(value,int(element['length']/8)), int(element['length']/8)
     
 functions = {
@@ -132,15 +130,10 @@ def generateExamplePacket( id, pcapfile ):
     for v in packet_dictionary['messages']:
         if id == v['id']:
             for k in v['data_element']:
-                print(k['length'])
-                print(k['name'])
-                print(k['type']['format'])
                 # determine if type is int and call appropriate data type
                 func = functions[k['type']['format']]
                 data, length = func(k)
                 message += data
-
-    print(message)
 
     udp = udp_header.replace('XX XX',"%04x"%port)
     udp_len = getByteLength(message) + getByteLength(udp_header)
