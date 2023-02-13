@@ -43,7 +43,7 @@
           "units": "bytes",
           "endianness": "Big",
           "type": {
-            "start_range": "@",
+            "start_range": 0,
             "end_range": 65535,
             "scale_factor": 1,
             "format": "Integer",
