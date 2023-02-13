@@ -20,6 +20,8 @@ import sys
 import binascii
 import json
 import socket
+import random
+import string
 
 # Opening JSON file
 with open('config.json') as json_file:
@@ -84,13 +86,18 @@ def writeByteStringToFile(bytestring, filename):
     bitout.write(bytes)
 
 def packHex( element ):
-    return 'DEAD'
+    value = random.randrange(element['type']['start_range'], element['type']['end_range'])
+    print("{0:0{1}X}".format(value,int(element['length']/8)))
+    return "{0:0{1}X}".format(value,int(element['length']/8)), int(element['length']/8)
 
 def packInteger( element ):
-    return 'DEAD'
+    value = random.randrange(element['type']['start_range'], element['type']['end_range'])
+    return "{0:0{1}X}".format(value,int(element['length']/8)), int(element['length']/8)
     
 def packString( element ):
-    return 'DEAD'
+    value = random.randrange(65, 90)
+    print("Random String {0:0{1}X}".format(value,int(element['length']/8)))
+    return "{0:0{1}X}".format(value,int(element['length']/8)), int(element['length']/8)
     
 functions = {
     'Integer': packInteger,
@@ -122,9 +129,6 @@ def generateExamplePacket( id, pcapfile ):
     ip_header = ip_header.replace('D3', str(destination_hex[6:8] ))
     ip_header = ip_header.replace('D4', str(destination_hex[8:10]))
 
-
-
-
     for v in packet_dictionary['messages']:
         if id == v['id']:
             for k in v['data_element']:
@@ -133,7 +137,9 @@ def generateExamplePacket( id, pcapfile ):
                 print(k['type']['format'])
                 # determine if type is int and call appropriate data type
                 func = functions[k['type']['format']]
-                message += func(k)
+                data, length = func(k)
+                message += data
+
     print(message)
 
     udp = udp_header.replace('XX XX',"%04x"%port)
@@ -182,6 +188,8 @@ def ip_checksum(iph):
 if len(sys.argv) < 2:
         print ('usage: pcapgen.py output_file')
         exit(0)
+
+random.seed()
 
 generatePCAPFileHeader( sys.argv[1] )
 generateExamplePacket( 2430, sys.argv[1])
