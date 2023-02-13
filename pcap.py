@@ -1,27 +1,21 @@
-
-# Default source address to 192.168.1.1
-source      = 0xc0a80101
-
-# Default destination address to 192.168.1.2
-destination = 0xc0a80102
-
-# Default port to 1973 
-port = 1973
-
-#Custom Foo Protocol Packet
-message =  ('')   
-
-
-"""----------------------------------------------------------------"""
-""" Do not edit below this line unless you know what you are doing """
-"""----------------------------------------------------------------"""
-
 import sys
 import binascii
 import json
 import socket
 import random
 import string
+
+# Default source address to 192.168.1.1
+source      = "192.168.1.1" 
+
+# Default destination address to 192.168.1.2
+destination = "192.168.1.2" 
+
+# Default port to 1973 
+port = 1973
+
+#Custom Foo Protocol Packet
+message =  ('')   
 
 # Opening JSON file
 with open('config.json') as json_file:
@@ -87,15 +81,15 @@ def writeByteStringToFile(bytestring, filename):
 
 def packHex( element ):
     value = random.randrange(element['type']['start_range'], element['type']['end_range'])
-    return "{0:0{1}X}".format(value,int(element['length']/8)), int(element['length']/8)
+    return "{0:0{1}X}".format(value,int(element['length']/4)), int(element['length']/8)
 
 def packInteger( element ):
     value = random.randrange(element['type']['start_range'], element['type']['end_range'])
-    return "{0:0{1}X}".format(value,int(element['length']/8)), int(element['length']/8)
+    return "{0:0{1}X}".format(value,int(element['length']/4)), int(element['length']/8)
     
 def packString( element ):
     value = random.randrange(65, 90)
-    return "{0:0{1}X}".format(value,int(element['length']/8)), int(element['length']/8)
+    return "{0:0{1}X}".format(value,int(element['length']/4)), int(element['length']/8)
     
 functions = {
     'Integer': packInteger,
